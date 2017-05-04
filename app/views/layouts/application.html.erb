@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title> Sinapse EPD Simulator  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.7/mapbox.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.7/mapbox.css' rel='stylesheet' />
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  
+
+  <%= include_gon %>
+  <%= csrf_meta_tags %>
+</head>
+<body id=home>
+<div class="container">
+	<div id=cabecera>
+	
+		
+		<p><%= image_tag "sinapse.png"%></p>
+
+		<% if notice %>
+			<p class="alert alert-success"><%= notice %></p>
+		<% end %>
+		<% if alert %>
+			<p class="alert alert-danger"><%= alert %></p>
+		<% end %>
+
+		
+
+	</div>
+	<!--<meta http-equiv="refresh" content="300"> Quitar el comentario si queremos que se refresque la app cada 5 min-->
+	
+	
+	<div id=header>
+
+		<!-- <%= @a_cont %>  Alarmas de Sistema // -->
+	</div>
+	<%= render 'layouts/navbar' %>
+
+	
+	<%= yield %>
+	<div id =footer>
+		   
+		<p class="pie"> © Copyright Sinapse Energía &nbsp </p>
+
+	</div> 
+
+</div>
+</body>
+</html>

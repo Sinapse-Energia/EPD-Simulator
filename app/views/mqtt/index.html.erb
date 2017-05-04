@@ -1,0 +1,46 @@
+<div id='relleno' class='row-fluid'>
+	
+	
+	<div class='col-md-offset-1 col-md-10 col-xs-offset-0 col-xs-12'>
+		<div>
+			<h1> <%= "Configuration of MQTT Client for Sinapse simulation devices"%></h1>
+			<br/>
+			<br/>
+		</div>
+		<h2> <%= "Status if the MQTT Client" %></h2>
+		<% if @mqtt_client.connected? then %>
+			<p> <%= "MQTT client connected to broker" %></p>
+			<p> <%= link_to "Disconnect", mqtt_disconnect_path, :class => 'btn btn-primary' %></p>
+		<% else %>
+			<p> <%= "MQTT client not connected" %></p>
+		<% end %>
+	</div>
+
+	<% if !@mqtt_client.connected? %>
+		<div class='col-md-offset-3 col-md-6 col-xs-offset-0 col-xs-12'>
+			<h2> <%= "Connection to a MQTT Broker" %></h2>
+			<div class='row form-group'>
+				<%= form_tag({action: "connect"}, id: "connect_mqtt_broker") do %>
+
+					<%= label_tag 'host', "Host" %>
+					<%= text_field_tag "mqtt[host]", nil, class: "form-control", value: "m21.cloudmqtt.com" %>
+					<br/>
+					<%= label_tag 'port', "Port" %>
+					<%= number_field_tag "mqtt[port]", nil, min: 0, max: 65000, class: "form-control", value: "10609" %>
+					<br/>
+					<%= label_tag 'SSL/TLS', "SSL/TLS" %>
+					<%= check_box_tag "mqtt[tls]", "false", false, disabled: true %>
+					<br/>
+					<%= label_tag 'username', "Username" %>
+					<%= text_field_tag "mqtt[username]", nil, class: "form-control", value: "ugjznzkc" %>
+					<br/>
+					<%= label_tag 'password', "Password" %>
+					<%= password_field_tag "mqtt[password]", nil, class: "form-control", value: "7UG2yVgH3zzi" %>
+					<br/>
+					<%= submit_tag "Connect", class: "btn btn-primary" %>
+
+				<% end %>
+			</div>
+		</div>
+	<% end %>			
+</div>

@@ -1,0 +1,58 @@
+<div id='relleno' class='row-fluid'>
+
+	<div class="col-md-12">
+	  <h1 align="center">Simulating <%=@epd.id_radio%></h1>	
+	  <br/>
+	  <div class="row">
+	  	<h2>Act over the device</h2>
+		  	<div class="row">
+			  	<div class="col-md-offset-5 col-md-2">
+			  	
+			  	<%= button_to "Turn ON", {action: "turn_on", method: "post", params: {id: @epd.id} }, class: "btn btn-primary"%>
+			  	
+			  	
+			  	<%= button_to "Turn OFF", {action: "turn_off", method: "post", params: {id: @epd.id} }, class: "btn btn-primary" %>
+			  	
+			  	
+			  	<%= form_tag({action: "dimming"}, :remote => false, :method => 'post', id: "dimming") do %>
+			  			<%= submit_tag "Dimming",  class: "btn btn-primary"%>
+			  			<%= hidden_field_tag(:id, @epd.id) %>
+						<%= number_field_tag(:dimming, nil, min: 1, max: 100, required: true, placeholder: "50")%>
+			  	<% end %>
+			  	
+			  	</div>
+		  	</div>
+	  	<h2>Send status to MQTT broker</h2>
+	  		<div class="row">
+			  	<div class="col-md-offset-4 col-md-4">
+			  	<%= form_tag({action: "send_status"}, :remote => false, :method => 'post', id: "dimming") do %>
+			  			<%= hidden_field_tag(:id, @epd.id) %>
+			  			<%= label_tag(:stat, "Status (0/1)")%>
+			  			<%= number_field_tag(:stat, @epd.stat, disabled: true,  class: "form-control") %>
+			  			<%= label_tag(:dstat, "Dimming (0..100)")%>
+			  			<%= number_field_tag(:dstat, @epd.dstat, disabled: true,  class: "form-control") %>
+			  			<%= label_tag(:temp, "Temperature (ºC)")%>
+			  			<%= number_field_tag(:temperature, @epd.temperature, disabled: true,  class: "form-control") %>
+			  			<%= label_tag(:current, "Current (mA)")%>
+			  			<%= number_field_tag(:current, @epd.current, disabled: true,  class: "form-control") %>
+			  			<%= label_tag(:voltage, "Voltage (V)")%>
+			  			<%= number_field_tag(:stat, @epd.voltage, disabled: true,  class: "form-control") %>
+			  			<%= label_tag(:active_power, "Active power (W)")%>
+			  			<%= number_field_tag(:active_power, @epd.active_power, disabled: true,  class: "form-control") %>
+			  			<%= label_tag(:reactive_power, "Reactive power (VAr)")%>
+			  			<%= number_field_tag(:reactive_power, @epd.reactive_power, disabled: true,  class: "form-control") %>
+			  			<%= label_tag(:apparent_power, "Apparent power (VAr)")%>
+			  			<%= number_field_tag(:apparent_power, @epd.apparent_power, disabled: true,  class: "form-control") %>
+			  			<%= label_tag(:aggregated_active_energy, "Aggregated active energy (Wh)")%>
+			  			<%= number_field_tag(:aggregated_active_energy, @epd.aggregated_active_energy, disabled: true,  class: "form-control") %>
+						<%= label_tag(:aggregated_reactive_energy, "Aggregated reactive energy (VAh)")%>
+			  			<%= number_field_tag(:aggregated_reactive_energy, @epd.aggregated_reactive_energy, disabled: true,  class: "form-control") %>
+						<%= label_tag(:aggregated_apparent_energy, "Aggregated apparent energy (VAh)")%>
+			  			<%= number_field_tag(:aggregated_apparent_energy, @epd.aggregated_apparent_energy, disabled: true,  class: "form-control") %><br/>
+						<%= submit_tag "Send",  class: "btn btn-primary"%>
+			  	<% end %>
+			  	</div>
+		  	</div>
+	  </div>
+	</div>
+</div>

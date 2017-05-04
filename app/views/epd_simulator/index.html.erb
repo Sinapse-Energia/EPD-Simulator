@@ -1,0 +1,41 @@
+<div id='relleno' class='row-fluid'>
+
+	<div class="col-md-12">
+	  <h1 align="center">Simulation of Sinapse Devices (Vodafone API)</h1>	
+	  <br/>
+	  <div class="row">
+	  	<h2>Create device</h2>
+	  	<div class="row form-group">
+	  		<%= form_tag({action: "create_epd"}, :remote => false, :method => 'post', id: "create_epd") do %>
+	  			<%= label_tag(:id_radio, "Device ID ")%>
+				<%= number_field_tag(:id_radio, nil, min: 1, minlength: 6, maxlength: 6, required: true, placeholder: "112233")%>
+	  		    <%= label_tag(:nominal_power, "Nominal power (W)" )%>
+				<%= number_field_tag(:nominal_power,  nil, min: 0, max: 1000, required: true, placeholder: "60")%>
+				<%= submit_tag "Create",  class: "btn btn-primary"%>
+	  		<% end %>
+	  	</div>
+	  
+	  	<h2>List of devices</h2>
+	  	<% @epds.each do |epd| %>
+	  			  	<div class="row form-group">
+	  					<%= form_tag({action: "show"}, :remote => false, :method => 'post', id: "show") do %>
+	  						<%= label_tag(:id_radio, "Device ID ")%>
+							<%= number_field_tag(:id_radio, epd.id_radio, min: 1, minlength: 6, maxlength: 6, disabled: true)%>
+							<%= hidden_field_tag(:id, epd.id) %>
+
+							<%= submit_tag "View",  class: "btn btn-primary"%>
+							<%= submit_tag "Delete",  class: "btn btn-danger"%>
+
+	  					<% end %>
+	  				</div>
+
+	  	<% end %>
+	  	
+
+	  </div>
+
+
+
+	</div> 	
+
+</div>

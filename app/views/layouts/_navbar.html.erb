@@ -1,0 +1,9 @@
+<nav class="navbar navbar-default" role="navigation">
+
+  <ul class="nav nav-tabs" role="tablist">
+  	<li class="<%= 'active' if current_page?(epd_simulator_index_path) %>"><%= link_to "Home" , epd_simulator_index_path %> </li>
+  	<li class="<%= 'active' if current_page?(mqtt_index_path) %>"><%= link_to "MQTT Client" , mqtt_index_path %> </li>
+  
+  </ul>
+	
+</nav>
