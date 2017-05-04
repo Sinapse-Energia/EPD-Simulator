@@ -8,7 +8,7 @@
 	  	<div class="row form-group">
 	  		<%= form_tag({action: "create_epd"}, :remote => false, :method => 'post', id: "create_epd") do %>
 	  			<%= label_tag(:id_radio, "Device ID ")%>
-				<%= number_field_tag(:id_radio, nil, min: 1, minlength: 6, maxlength: 6, required: true, placeholder: "112233")%>
+				<%= number_field_tag(:id_radio, nil, min: 100000, max: 999999, required: true, placeholder: "112233")%>
 	  		    <%= label_tag(:nominal_power, "Nominal power (W)" )%>
 				<%= number_field_tag(:nominal_power,  nil, min: 0, max: 1000, required: true, placeholder: "60")%>
 				<%= submit_tag "Create",  class: "btn btn-primary"%>
