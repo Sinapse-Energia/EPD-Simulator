@@ -38,6 +38,11 @@ class MqttController < ApplicationController
       # Disconnection management
       @mqtt_client.set_disconnected_by_error(true)
       @mqtt_client.set_performing_test(false)
+
+      # To subscribe to the by default topics
+      subscribe_to_epd_topics()
+      # To receive messages in background
+      ReceiveMqttMessagesJob.perform_later
       
       return true
     rescue Exception => ex
@@ -68,4 +73,23 @@ class MqttController < ApplicationController
 	def mqtt_params
 		params.require(:mqtt).permit(:host, :port, :tls, :username, :password, :devices, :time_between_mqtt_commands, :period, :time_of_testing, :repetitions, :type_of_test)
 	end
+
+	def subscribe_to_epd_topics()
+		@mqtt_client = SinapseMQTTClientSingleton.instance
+		devices = Epd.all
+		begin
+			devices.each do |device|
+				topic = "LU/LUM/ACT/" + device.id_radio.to_s
+				@mqtt_client.subscribe(topic)
+				EPD_SIMULATOR_LOGGER.info("Client subscribed to default: " + topic)
+			end
+		rescue Exception => ex
+			write_error(ex.message)
+		end
+	end
+
+	def write_error(message)
+		@error_connection = message
+		EPD_SIMULATOR_LOGGER.error @error_connection
+	end	
 end

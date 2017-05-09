@@ -58,6 +58,12 @@ gem 'multi-dates-picker-rails'
 gem 'will_paginate', '~> 3.1.0'
 gem 'will_paginate-bootstrap'#para darle formato a la paginacion
 
+# Background jobs: It is necessary to get the messages through subscriptions of the MQTT Client
+gem 'sucker_punch'
+
+# Scheduled jobs: It is necessary to re-connect automatically to the MQTT broker if the client is disconnected
+gem 'rufus-scheduler', '~> 3.2.2'
+
 
 
 gem 'sinapse_mqtt_client', '0.4.0', :git => 'https://github.com/ralcaide/sinapse_mqtt_client.git'
