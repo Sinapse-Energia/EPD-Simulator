@@ -10,6 +10,8 @@ class EpdSimulatorController < ApplicationController
   	
   	if params[:commit] == "Delete"
   	 	device_id = params[:id]
+  	 	device = Epd.find(device_id)
+  	 	manage_subscription_topics(0, device.id_radio)
   	 	Epd.delete(device_id)
   	 	@epds = Epd.all
   	 	render :index		
@@ -30,7 +32,8 @@ class EpdSimulatorController < ApplicationController
 
   	epd_model = Epd.new 
   	epd_model.create_epd(id_radio, nominal_power)
-
+  	# TODO: Create subscription of the MQTT client to the related topic
+  	manage_subscription_topics(1, id_radio)
   	@epds = Epd.all
 
   	render :index
@@ -90,5 +93,34 @@ class EpdSimulatorController < ApplicationController
 	@epd = Epd.find(device_id) # Necessary to display the view trough show 
 
 	render :show
+  end
+
+  private
+
+  # Types 
+  # 0 = unsubscribe
+  # 1 = subscribe
+  def manage_subscription_topics(type, id_radio)
+  	# Get id_radio
+  	#device = Epd.find(device_id)
+  	#id_radio = device.id_radio
+
+  	# Create the topic
+  	topic = "LU/LUM/ACT/"+id_radio.to_s
+  	
+  	# Get the MQTT Client
+  	mqtt_client = SinapseMQTTClientSingleton.instance 
+  	if mqtt_client.connected?
+	  	if type == 0 # unsubscribe
+	  		mqtt_client.unsubscribe(topic)
+	  		EPD_SIMULATOR_LOGGER.info("MQTT client unsubscribed from: " + topic)
+	  	elsif type == 1 # subscribe
+	  		EPD_SIMULATOR_LOGGER.info("MQTT client subscribed to: " + topic)
+	  		mqtt_client.subscribe(topic)
+	  	end
+  	else
+  		EPD_SIMULATOR_LOGGER.info("The subscription of the topics can not be managed because the client is disconnected")
+  	end
+
   end
 end
