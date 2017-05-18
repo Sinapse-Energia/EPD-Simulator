@@ -76,37 +76,19 @@ class EpdSimulatorController < ApplicationController
   end
 
   def send_status
+  	epd_model = Epd.new
   	device_id = params[:id]
-	@epd = Epd.find(device_id)
 
-	mqtt_client = SinapseMQTTClientSingleton.instance
+  	result, message = epd_model.send_status(device_id)
 
-	if mqtt_client.connected?
-		# EPD with data
-		status_parameters = {
-			id_radio: @epd.id_radio,
-			temp: @epd.temperature,
-			stat: @epd.stat,
-			dstat: @epd.dstat,
-			voltage: @epd.voltage,
-			current: @epd.current,
-			active_power: @epd.active_power,
-			reactive_power: @epd.reactive_power,
-			apparent_power: @epd.apparent_power,
-			aggregated_active_energy: @epd.aggregated_active_energy,
-			aggregated_reactive_energy: @epd.aggregated_reactive_energy,
-			aggregated_apparent_energy: @epd.aggregated_apparent_energy,
-			frequency: @epd.frequency
-		}
+  	if result
+  		flash.now[:notice] = message
+  	else
+  		flash.now[:alert] = message	
+  	end
 
-		
-		result = mqtt_client.simulate_status_frame("LU/LUM/SEN", status_parameters)
+	@epd = Epd.find(device_id) # Necessary to display the view trough show 
 
-
-		flash.now[:notice] = "Message sent: " + result[0][:message].to_s + " to topic: " + result[0][:topic].to_s
-	else
-		flash.now[:alert] = "Message is not sent because the MQTT client is not connected. Please connect with a Broker" 
-	end
 	render :show
   end
 end

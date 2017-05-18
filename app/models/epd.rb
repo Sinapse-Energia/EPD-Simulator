@@ -99,5 +99,45 @@ class Epd < ActiveRecord::Base
 	end
 
 
+	# Methods to send information to the MQTT broker. This actions normally should be performed in a library because will be used by controllers and jobs but by the moment are in the model developed.
+	# RAE: To improve
+
+	# Inputs: Id is the id of the device in the database, not the id_radio
+   	def send_status(id)
+   		epd = Epd.find(id)
+
+		mqtt_client = SinapseMQTTClientSingleton.instance
+
+		if mqtt_client.connected?
+			# EPD with data
+			status_parameters = {
+				id_radio: epd.id_radio,
+				temp: epd.temperature,
+				stat: epd.stat,
+				dstat: epd.dstat,
+				voltage: epd.voltage,
+				current: epd.current,
+				active_power: epd.active_power,
+				reactive_power: epd.reactive_power,
+				apparent_power: epd.apparent_power,
+				aggregated_active_energy: epd.aggregated_active_energy,
+				aggregated_reactive_energy: epd.aggregated_reactive_energy,
+				aggregated_apparent_energy: epd.aggregated_apparent_energy,
+				frequency: epd.frequency
+				}
+
+		
+			result_simulation= mqtt_client.simulate_status_frame("LU/LUM/SEN", status_parameters)
+
+			message = "Message sent: " + result_simulation[0][:message].to_s + " to topic: " + result_simulation[0][:topic].to_s
+			result = true
+		else
+			message = "Message is not sent because the MQTT client is not connected. Please connect with a Broker"
+			result = false
+		end
+
+		return result, message
+   	end	
+
 
 end
