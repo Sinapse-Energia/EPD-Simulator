@@ -1,28 +1,23 @@
-== README
+= README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+== Download the application
 
-Things you may want to cover:
+Perform a checkout of this repository: git checkout https://github.com/Sinapse-Energia/EPD-Simulator.git
 
-* Ruby version
+== Deployment
 
-* System dependencies
+This is a Ruby on Rails application that is able to run over the version 4.2.0 of the framework and use a Postgres database in order to save the necessary data. Following are the steps to follow in order to deploy the application in an *empty* server.
 
-* Configuration
+1. Install the ruby on rails framework version 4.2.0 (gem, bundle, rails, etc.)
+2. Install postgresql database
 
-* Database creation
+At this moment, the rails environment should be ready and the application could be deployed
 
-* Database initialization
+Then, go to the root directory of the application and execute the following commands in order to execute the app:
 
-* How to run the test suite
+3. Open the file config/database.yml and set the credentials of your postgresql database
+4. bundle install : This command install all the gems required by the app and set in the Gemfile
+5. bundle exec rake db:migrate : This command create the database
+6. bundle exec rake db:seed : This command init the database with the necessary data
+7. rails server : This command execute the application in a web server. At this moment the application is accessible through 127.0.0.1:3000
 
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
