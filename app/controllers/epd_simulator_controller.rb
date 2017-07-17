@@ -16,11 +16,13 @@ class EpdSimulatorController < ApplicationController
   	 	@epds = Epd.all
   	 	render :index		
 
-  	else 
+  	elsif !params[:id].nil?
   		device_id = params[:id]
   		@epd = Epd.find(device_id)
   		render :show
-  	end
+    else
+      #TODO
+    end
   end
 
   # Method that creates an EPD for simulation in the database
@@ -106,7 +108,7 @@ class EpdSimulatorController < ApplicationController
   	#id_radio = device.id_radio
 
   	# Create the topic
-  	topic = Rails.application.config_subscription_root + id_radio.to_s
+  	topic = Rails.application.config.subscription_root + id_radio.to_s
   	
   	# Get the MQTT Client
   	mqtt_client = SinapseMQTTClientSingleton.instance 

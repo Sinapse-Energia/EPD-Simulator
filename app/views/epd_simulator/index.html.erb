@@ -18,7 +18,7 @@
 	  	<h2>List of devices</h2>
 	  	<% @epds.each do |epd| %>
 	  			  	<div class="row form-group">
-	  					<%= form_tag({action: "show"}, :remote => false, :method => 'post', id: "show") do %>
+	  					<%= form_tag({action: "show"}, :remote => false, :method => 'get', id: "show") do %>
 	  						<%= label_tag(:id_radio, "Device ID ")%>
 							<%= number_field_tag(:id_radio, epd.id_radio, min: 1, minlength: 6, maxlength: 6, disabled: true)%>
 							<%= hidden_field_tag(:id, epd.id) %>
