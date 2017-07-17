@@ -38,6 +38,9 @@ Rails.application.configure do
 
   require "epd_simulator_logger"
 
+  #Create on_demmand_scheduler object accessible everywhere
+  require "on_demmand_scheduler"
+
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 end

@@ -93,6 +93,18 @@ end
       saved = lighting_profile_model.set_lighting_profile(epd_id, msg)
       if saved
         # To create scheduler actions (using on_demmand_scheduler library)
+=begin        
+        lighting_profile = Array.new
+        dimming_elements = get_dimming_elements(message_array)
+        time_elements = get_time_elements(message_array)
+        dimming_elements.each_with_index do |dimming, index|
+          time = time_elements[index]
+          profile_step = {dimming: dimming, start_time: time}
+          lighting_profile.push(profile_step)
+        end
+        ON_DEMMAND_SCHEDULER.create_scheduled_actions_as_on_demmand_actions(epd_id, lighting_profile)
+=end 
+        ON_DEMMAND_SCHEDULER.create_all_scheduled_actions_as_on_demmand_actions
       end 
 
     end
@@ -141,8 +153,8 @@ end
 def check_validity_of_profile(message)
   result = false
   if message.size.even? #It should contains par elements : 100, 13:20, 0, 19:30
-    dimming_elements = message.values_at(* message.each_index.select(&:even?)) # Get even elements (dimming)
-    time_elements = message.values_at(* message.each_index.select(&:odd?)) # Get odd elements (timing)
+    dimming_elements = get_dimming_elements(message)
+    time_elements = get_time_elements(message)
     if check_validity_of_dimming(dimming_elements) && check_validity_of_time(time_elements)
       result = true
     end
@@ -172,4 +184,13 @@ def check_validity_of_time(time_array)
     end
   end
   return result
+end
+
+# RAE TODO : Move to helpers. DRY!!!!
+def get_dimming_elements(message)
+  return message.values_at(* message.each_index.select(&:even?)) # Get even elements (dimming)
+end
+
+def get_time_elements(message)
+  return message.values_at(* message.each_index.select(&:odd?)) # Get odd elements (timing)
 end

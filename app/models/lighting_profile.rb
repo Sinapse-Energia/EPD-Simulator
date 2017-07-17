@@ -48,4 +48,39 @@ class LightingProfile < ActiveRecord::Base
 		# Get lighting profile and publish it
 	end
 
+	def get_all_lighting_profiles()
+		all_lighting_profiles = LightingProfile.all
+		all_lighting_profile_array = Array.new	
+		
+		all_lighting_profiles.each do |lighting_profile|
+			id_radio = Epd.find_by(id: lighting_profile.epd_id).id_radio
+			message = lighting_profile.profile
+			message_array = message.split(";")
+
+			lighting_profile_steps = Array.new
+        	dimming_elements = get_dimming_elements(message_array)
+        	time_elements = get_time_elements(message_array)
+        	
+        	dimming_elements.each_with_index do |dimming, index|
+          		time = time_elements[index]
+          		profile_step = {dimming: dimming, start_time: time}
+          		lighting_profile_steps.push(profile_step)
+        	end
+        	lighting_profile_element = {id_radio: id_radio, lighting_profile_steps: lighting_profile_steps}
+        	all_lighting_profile_array.push(lighting_profile_element) 
+		end
+		return all_lighting_profile_array
+	end
+
+	private
+
+	# RAE TODO : Move to helpers. DRY!!!!
+	def get_dimming_elements(message)
+  		return message.values_at(* message.each_index.select(&:even?)) # Get even elements (dimming)
+	end
+
+	def get_time_elements(message)
+  		return message.values_at(* message.each_index.select(&:odd?)) # Get odd elements (timing)
+	end
+
 end
