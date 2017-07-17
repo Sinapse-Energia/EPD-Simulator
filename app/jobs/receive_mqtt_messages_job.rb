@@ -20,13 +20,13 @@ class ReceiveMqttMessagesJob < ActiveJob::Base
 	      #unless /^[0-9a-fA-F]{6}$/.match(address).nil? then
 
 	      
-	    if topic.match('LU/LUM/ACT')
+	    if topic.match(Rails.application.config.subscription_root)
 	        
 	    	message_parties = message.split(";")
 	       	message_type = message_parties[0]
 
 	       	topic_parties = topic.split("/")
-	        epd_id = topic_parties[3] # It is not necessary to check if the epd_id exists because the client is only subscribed to the topics related with its IDs
+	        epd_id = topic_parties.last # It is not necessary to check if the epd_id exists because the client is only subscribed to the topics related with its IDs
 		    case 
 
 		          when message_type == "1" # Pull measurement
@@ -35,9 +35,10 @@ class ReceiveMqttMessagesJob < ActiveJob::Base
 
 		          when message_type == "2" 
 		            EPD_SIMULATOR_LOGGER.info("Processing actuation message received for End Point Device: " + message + " in the topic: " + topic )
-		            process_lighting_profile_message(message)
+		            message_parties.delete_at(0) #Removing id of the message
+                process_lighting_profile_message(epd_id, message_parties)
 
-				  when message_type == "3" # On demmand actuation
+				      when message_type == "3" # On demmand actuation
 		            EPD_SIMULATOR_LOGGER.info("Processing actuation message received for End Point Device: " + message + " in the topic: " + topic )
 		            dimming = message_parties[1]
 		            process_on_demmand_message(epd_id, dimming)			          
@@ -78,8 +79,24 @@ end
   end
 
 
-  def process_lighting_profile_message(message)
+  def process_lighting_profile_message(epd_id, message_array)
   	#TODO
+    lighting_profile_model = LightingProfile.new
+    
+    # To check validity of message
+    valid = check_validity_of_profile(message_array)
+    
+    # To save message in database -> In order to be returned if necessary
+    if valid
+      # To save message in database -> In order to be returned if necessary
+      msg = message_array.join(";") + ";"
+      saved = lighting_profile_model.set_lighting_profile(epd_id, msg)
+      if saved
+        # To create scheduler actions (using on_demmand_scheduler library)
+      end 
+
+    end
+ 
   end
 
 
@@ -115,3 +132,44 @@ end
   	#TODO
   end
 
+
+
+
+
+##### Helpers methods #####
+
+def check_validity_of_profile(message)
+  result = false
+  if message.size.even? #It should contains par elements : 100, 13:20, 0, 19:30
+    dimming_elements = message.values_at(* message.each_index.select(&:even?)) # Get even elements (dimming)
+    time_elements = message.values_at(* message.each_index.select(&:odd?)) # Get odd elements (timing)
+    if check_validity_of_dimming(dimming_elements) && check_validity_of_time(time_elements)
+      result = true
+    end
+  end
+  return result
+end
+
+def check_validity_of_dimming(dimming_array)
+  result = true
+  dimming_array.each do |dimming|
+    if dimming.to_i < 0 || dimming.to_i > 100 || !(dimming !~ /\D/) # Not a nomber
+      result = false
+      EPD_SIMULATOR_LOGGER.info("Dimming not valid: " + dimming.to_s)
+    end
+  end
+  return result
+end
+
+def check_validity_of_time(time_array)
+  result = true
+  time_array.each do |time|
+    begin 
+      Time.parse(time)
+    rescue
+      result = false
+      EPD_SIMULATOR_LOGGER.info("Time not valid: " + time.to_s)
+    end
+  end
+  return result
+end

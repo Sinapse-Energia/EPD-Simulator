@@ -127,7 +127,7 @@ class Epd < ActiveRecord::Base
 				}
 
 		
-			result_simulation= mqtt_client.simulate_status_frame("LU/LUM/SEN", status_parameters)
+			result_simulation= mqtt_client.simulate_status_frame(Rails.application.config.publish_measurements_topic, status_parameters)
 
 			message = "Message sent: " + result_simulation[0][:message].to_s + " to topic: " + result_simulation[0][:topic].to_s
 			result = true

@@ -79,7 +79,7 @@ class MqttController < ApplicationController
 		devices = Epd.all
 		begin
 			devices.each do |device|
-				topic = "LU/LUM/ACT/" + device.id_radio.to_s
+				topic = Rails.application.config.subscription_root + device.id_radio.to_s
 				@mqtt_client.subscribe(topic)
 				EPD_SIMULATOR_LOGGER.info("Client subscribed to default: " + topic)
 			end

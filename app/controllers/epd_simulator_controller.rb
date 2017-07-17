@@ -106,7 +106,7 @@ class EpdSimulatorController < ApplicationController
   	#id_radio = device.id_radio
 
   	# Create the topic
-  	topic = "LU/LUM/ACT/"+id_radio.to_s
+  	topic = Rails.application.config_subscription_root + id_radio.to_s
   	
   	# Get the MQTT Client
   	mqtt_client = SinapseMQTTClientSingleton.instance 

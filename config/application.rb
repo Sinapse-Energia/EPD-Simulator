@@ -24,6 +24,12 @@ module EpdSimulator
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
 
+    # MQTT configuration
+    config.subscription_root = "SC/ES/RI/LI/SI/ACT/"
+    config.publish_measurements_topic = "SC/ES/RI/LI/SI/SEN"
+    config.publish_alerts_topic = "SC/ES/RI/LI/SI/ALE"
+
+
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
   end
