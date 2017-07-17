@@ -31,7 +31,7 @@ class LightingProfile < ActiveRecord::Base
 
 	def get_lighting_profile(id_radio)
 		epd_record = Epd.find_by(id_radio: id_radio)
-		profile = "NOT_SET" #If there is not a lighting profile for this EPD
+		profile = "-1;" #If there is not a lighting profile for this EPD
 		if !epd_record.nil?
 			epd_id = epd_record.id
 			lighting_profile_record = LightingProfile.find_by(epd_id: epd_id)
@@ -46,6 +46,27 @@ class LightingProfile < ActiveRecord::Base
 
 	def send_lighting_profile(id_radio)
 		# Get lighting profile and publish it
+		lighting_profile = get_lighting_profile(id_radio)
+		msg = id_radio.to_s + ";" + lighting_profile
+
+		mqtt_client = SinapseMQTTClientSingleton.instance
+
+		if mqtt_client.connected?
+			
+			lighting_profile = get_lighting_profile(id_radio)
+			msg = id_radio.to_s + ";" + lighting_profile				
+		
+			mqtt_client.publish(Rails.application.config.publish_measurements_topic, msg) # RAE TO IMPROVE: To use Sinapse_MQTT Gem
+
+			message = "Message sent: " + msg + " to topic: " + Rails.application.config.publish_measurements_topic
+			result = true
+		else
+			message = "Message is not sent because the MQTT client is not connected. Please connect with a Broker"
+			result = false
+		end
+
+		return result, message
+
 	end
 
 	def get_all_lighting_profiles()

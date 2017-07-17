@@ -30,11 +30,11 @@ class ReceiveMqttMessagesJob < ActiveJob::Base
 		    case 
 
 		          when message_type == "1" # Pull measurement
-		            EPD_SIMULATOR_LOGGER.info("Processing actuation message received for End Point Device: " + message + " in the topic: " + topic )
+		            EPD_SIMULATOR_LOGGER.info("Processing pull measurement message received for End Point Device: " + message + " in the topic: " + topic )
 		            process_pull_measurement_message(epd_id)
 
 		          when message_type == "2" 
-		            EPD_SIMULATOR_LOGGER.info("Processing actuation message received for End Point Device: " + message + " in the topic: " + topic )
+		            EPD_SIMULATOR_LOGGER.info("Processing lighting profile message received for End Point Device: " + message + " in the topic: " + topic )
 		            message_parties.delete_at(0) #Removing id of the message
                 process_lighting_profile_message(epd_id, message_parties)
 
@@ -50,7 +50,11 @@ class ReceiveMqttMessagesJob < ActiveJob::Base
 		          when message_type == "6"
 		          	EPD_SIMULATOR_LOGGER.info("Processing actuation message received for End Point Device: " + message + " in the topic: " + topic )
 		          	process_configure_thresholds(message)
-		          else 
+		          
+              when message_type == "201"
+                EPD_SIMULATOR_LOGGER.info("Processing pull lighting profile message received for End Point Device: " + message + " in the topic: " + topic )
+                process_pull_lighting_profile_message(epd_id)
+              else 
 		            EPD_SIMULATOR_LOGGER.info(message + " not valid to process the data received")
 
 		    end
@@ -144,7 +148,16 @@ end
   	#TODO
   end
 
-
+  
+  def process_pull_lighting_profile_message(epd_id)
+    lighting_profile_model = LightingProfile.new
+    result, message = lighting_profile_model.send_lighting_profile(epd_id)
+    if result
+      EPD_SIMULATOR_LOGGER.info("Pull lighting profile correctly processed. Message sent: " + message)
+    else
+      EPD_SIMULATOR_LOGGER.error("Pull lighting profile was not processed due MQTT Client Broker: " + message)
+    end
+  end
 
 
 
