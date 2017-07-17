@@ -1,8 +1,8 @@
 GIT
   remote: https://github.com/ralcaide/sinapse_mqtt_client.git
-  revision: b613df4eac8893926cd2d1e40eae126bd46d4339
+  revision: ce1b85323810cad769e645232df2f40ef55f0911
   specs:
-    sinapse_mqtt_client (0.4.0)
+    sinapse_mqtt_client (0.4.1)
       json
       mqtt
 
@@ -212,7 +212,7 @@ DEPENDENCIES
   sdoc (~> 0.4.0)
   simple-navigation
   simple_calendar
-  sinapse_mqtt_client (= 0.4.0)!
+  sinapse_mqtt_client (= 0.4.1)!
   spring
   sucker_punch
   turbolinks
