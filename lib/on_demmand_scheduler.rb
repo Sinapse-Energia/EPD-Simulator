@@ -14,7 +14,7 @@ class OnDemmandScheduler
     		cron_string = "#{minutes} #{hour} * * *"
     		EPD_SIMULATOR_LOGGER.info("Creating cron job : " + cron_string )
 
-    		job_id =
+    		
     		Rufus::Scheduler.singleton.cron cron_string, :tag => job_tag do
         		EPD_SIMULATOR_LOGGER.info("Executing On Demmand Scheduler task for: " + epd.to_s)
         		# Create on demmand actions
@@ -65,13 +65,57 @@ class OnDemmandScheduler
    		# TODO: To remove the schedules related with the on_demmand scheduler. (Using TAGS)   		
    		EPD_SIMULATOR_LOGGER.info "Removing all the scheduled actions as on demmand actions"
 
-   		jobs = Rufus::Scheduler.singleton.jobs(:tag => tag) #Search for the scheduled jobs
+   		jobs = Rufus::Scheduler.singleton.jobs(:tag => tag) #Search for the scheduled jobse
    		
    		jobs.each do |job|
    			Rufus::Scheduler.singleton.unschedule(job)	# Unschedule each job
    		end
    	end
 
+
+    def create_periodic_measurements_as_on_demmand_measurements(epd, period, tag)
+      
+      if !period.nil? && period.to_i > 0
+        job_tag = tag 
+        every_string = "#{period}m"
+        EPD_SIMULATOR_LOGGER.info("Creating every job : " + every_string )
+
+        Rufus::Scheduler.singleton.every every_string, :tag => job_tag do
+              EPD_SIMULATOR_LOGGER.info("Executing On Demmand Measurement task for: " + epd.to_s)
+              # Create periodic measurement
+              epd_model = Epd.new
+              epd_model.send_status(epd, true)
+        end
+      end   
+    end
+
+    def create_all_periodic_measurements_as_on_demmand_measurements
+      # TODO: For each epd in the database, this method will generate a scheduler task for each periodic measurement. 
+      
+      tag = 'measurement_on_demmand' # Tag to locate the jobs
+
+      # Unschedule all the planned jobs related with a given tag
+      delete_all_periodic_measurements_as_on_demmand_measurements(tag) 
+
+      all_epds = Epd.all
+
+      EPD_SIMULATOR_LOGGER.info "Sending all periodic measurements through the scheduler"
+      
+      all_epds.each do |epd|
+        create_periodic_measurements_as_on_demmand_measurements(epd.id, epd.period, tag)
+      end
+    end
+
+    def delete_all_periodic_measurements_as_on_demmand_measurements(tag)
+      # TODO: To remove the schedules related with the on_demmand measurements. (Using TAGS)       
+      EPD_SIMULATOR_LOGGER.info "Removing all the scheduled measurements as on demmand measurements"
+
+      jobs = Rufus::Scheduler.singleton.jobs(:tag => tag) #Search for the scheduled jobs
+      
+      jobs.each do |job|
+        Rufus::Scheduler.singleton.unschedule(job)  # Unschedule each job
+      end
+    end
 end
 
 ON_DEMMAND_SCHEDULER = OnDemmandScheduler.new

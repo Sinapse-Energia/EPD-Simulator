@@ -19,3 +19,18 @@ end
 rufus.in '1m' do
  	ON_DEMMAND_SCHEDULER.create_all_scheduled_actions_as_on_demmand_actions
 end
+
+# ARTISANAL Ping to broker in order to avoid disconnections
+rufus.every '30m' do
+	mqtt_client = SinapseMQTTClientSingleton.instance
+     EPD_SIMULATOR_LOGGER.info "In rufus-scheduler testing the connection with the broker"
+        
+	if mqtt_client.connected?
+		# Publish PING
+        topic = Rails.application.config.debug_topic
+        message = "PING"
+        mqtt_client.publish(topic, message)
+        EPD_SIMULATOR_LOGGER.info("Message: " + message + " published in topic: " + topic)
+		
+	end
+end

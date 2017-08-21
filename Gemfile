@@ -66,7 +66,7 @@ gem 'rufus-scheduler', '~> 3.2.2'
 
 
 
-gem 'sinapse_mqtt_client', '0.4.1', :git => 'https://github.com/ralcaide/sinapse_mqtt_client.git'
+gem 'sinapse_mqtt_client', '0.4.2', :git => 'https://github.com/ralcaide/sinapse_mqtt_client.git'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

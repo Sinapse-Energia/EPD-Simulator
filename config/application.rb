@@ -25,9 +25,14 @@ module EpdSimulator
     # config.i18n.default_locale = :de
 
     # MQTT configuration
-    config.subscription_root = "SC/ES/RI/LI/SI/ACT/"
-    config.publish_measurements_topic = "SC/ES/RI/LI/SI/SEN"
-    config.publish_alerts_topic = "SC/ES/RI/LI/SI/ALE"
+    config.installation_name = "SINAPSE_SIMULATOR"
+    config.ap = "700190" # AP used for simulations
+    config.subscription_root = Rails.application.config.installation_name + "/" + config.ap + "/ACT/" 
+    config.publish_measurements_topic = Rails.application.config.installation_name + "/EPD/MEASUREMENTS"
+    config.publish_periodic_topic = Rails.application.config.installation_name + "/EPD/PERIODIC" 
+    config.publish_alerts_topic = Rails.application.config.installation_name + "/EPD/ALERTS"
+
+    config.debug_topic = "SINAPSE/IOT/DEBUG"
 
 
     # Do not swallow errors in after_commit/after_rollback callbacks.

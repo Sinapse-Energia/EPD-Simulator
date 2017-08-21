@@ -98,12 +98,25 @@ class Epd < ActiveRecord::Base
 		return result
 	end
 
+	
+
+	def set_periodic_measurement_interval(id, period)
+		epd = Epd.find(id)
+		
+		if !epd.nil?
+			epd.period = period
+		end
+		result = epd.save
+		return result
+
+	end
 
 	# Methods to send information to the MQTT broker. This actions normally should be performed in a library because will be used by controllers and jobs but by the moment are in the model developed.
 	# RAE: To improve
 
 	# Inputs: Id is the id of the device in the database, not the id_radio
-   	def send_status(id)
+	# periodic indicates where to publish: measurements or periodic
+   	def send_status(id, periodic = false)
    		epd = Epd.find(id)
 
 		mqtt_client = SinapseMQTTClientSingleton.instance
@@ -123,11 +136,13 @@ class Epd < ActiveRecord::Base
 				aggregated_active_energy: epd.aggregated_active_energy,
 				aggregated_reactive_energy: epd.aggregated_reactive_energy,
 				aggregated_apparent_energy: epd.aggregated_apparent_energy,
-				frequency: epd.frequency
+				frequency: epd.frequency,
+                timestamp: Time.now.to_i 
 				}
 
-		
-			result_simulation= mqtt_client.simulate_status_frame(Rails.application.config.publish_measurements_topic, status_parameters)
+		    periodic ? topic = Rails.application.config.publish_periodic_topic : topic = Rails.application.config.publish_measurements_topic  
+
+			result_simulation= mqtt_client.simulate_status_frame(topic, status_parameters)
 
 			message = "Message sent: " + result_simulation[0][:message].to_s + " to topic: " + result_simulation[0][:topic].to_s
 			result = true

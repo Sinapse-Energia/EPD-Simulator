@@ -45,7 +45,8 @@ class ReceiveMqttMessagesJob < ActiveJob::Base
 
 		          when message_type == "4"
 		            EPD_SIMULATOR_LOGGER.info("Processing actuation message received for End Point Device: " + message + " in the topic: " + topic )
-		            process_periodic_measurement_interval_set_message(message)
+		            period = message_parties[1]
+                process_periodic_measurement_interval_set_message(epd_id, period) # Implementation of command 4;X; TODO: New version of the command
 		          
 		          when message_type == "6"
 		          	EPD_SIMULATOR_LOGGER.info("Processing actuation message received for End Point Device: " + message + " in the topic: " + topic )
@@ -139,8 +140,14 @@ end
   end
 
 
-  def process_periodic_measurement_interval_set_message(message)
-  	#TODO
+  def process_periodic_measurement_interval_set_message(epd_id, period)
+  	#TODO using ON_DEMMAND_SCHEDULER
+    epd_model = Epd.new
+    device = Epd.find_by(id_radio: epd_id)
+    saved = epd_model.set_periodic_measurement_interval(device.id, period)
+    if saved
+      ON_DEMMAND_SCHEDULER.create_all_periodic_measurements_as_on_demmand_measurements
+    end
   end
 
 
